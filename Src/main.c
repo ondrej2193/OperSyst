@@ -184,10 +184,10 @@ int main(void)
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
  
-
+  HAL_TIM_Base_Start_IT(&htim2);
   /* Start scheduler */
   osKernelStart();
-  
+
   /* We should never get here as control is now taken by the scheduler */
 
   /* Infinite loop */
@@ -283,9 +283,9 @@ static void MX_TIM2_Init(void)
   TIM_MasterConfigTypeDef sMasterConfig;
 
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 0;
+  htim2.Init.Prescaler = 36000;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 0xFFFA;
+  htim2.Init.Period = 20000;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
@@ -457,7 +457,7 @@ void StartDefaultTask(void const * argument)
   for(;;)
   {
 
-	    debugPrint(&huart1,	"oimate!"	);	// print
+		debugPrint(&huart1,	"oimate!"	);	// print
 	    debugPrint(&huart1,	"\r\n"	);	// manual new line
 	    debugPrintln(&huart1,	"how are you?"	);	// print full line
 	    osDelay(1000);
