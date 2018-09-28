@@ -72,6 +72,8 @@ osSemaphoreId bISemSendSerialDataHandle;
 osSemaphoreId bISemGetCANDataHandle;
 osSemaphoreId bISemSendCANDataHandle;
 osSemaphoreId bISemGetSerialDataHandle;
+osSemaphoreId xBinarySemaphoreHandle;
+SemaphoreHandle_t xCountingSemaphore;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
@@ -89,6 +91,7 @@ static void MX_USART1_UART_Init(void);
 void StartDefaultTask(void const * argument);
 void SerialMonitor(void const * argument);
 void CANKomunik(void const * argument);
+void SetxBinarySemaphoreHandleFromISR( BaseType_t xHiPriorTaskWok);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -155,6 +158,10 @@ int main(void)
   osSemaphoreDef(bISemGetSerialData);
   bISemGetSerialDataHandle = osSemaphoreCreate(osSemaphore(bISemGetSerialData), 1);
 
+  osSemaphoreDef(xBinarySemaphore);
+  xBinarySemaphoreHandle = osSemaphoreCreate(osSemaphore(xBinarySemaphore), 1);
+
+
   /* USER CODE BEGIN RTOS_SEMAPHORES */
   /* add semaphores, ... */
   /* USER CODE END RTOS_SEMAPHORES */
@@ -169,11 +176,14 @@ int main(void)
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of serMonTask */
+  if( bISemGetSerialDataHandle != NULL )
+  {
   osThreadDef(serMonTask, SerialMonitor, osPriorityNormal, 0, 128);
   serMonTaskHandle = osThreadCreate(osThread(serMonTask), NULL);
+  }
 
   /* definition and creation of CANTask */
-  osThreadDef(CANTask, CANKomunik, osPriorityHigh, 0, 128);
+  osThreadDef(CANTask, CANKomunik, osPriorityNormal, 0, 128);
   CANTaskHandle = osThreadCreate(osThread(CANTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -184,10 +194,8 @@ int main(void)
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
  
-  HAL_TIM_Base_Start_IT(&htim2);
-  /* Start scheduler */
+    /* Start scheduler */
   osKernelStart();
-
   /* We should never get here as control is now taken by the scheduler */
 
   /* Infinite loop */
@@ -248,7 +256,7 @@ void SystemClock_Config(void)
   HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
 
   /* SysTick_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(SysTick_IRQn, 15, 0);
+  HAL_NVIC_SetPriority(SysTick_IRQn, 15-1, 0);
 }
 
 /* CAN init function */
@@ -324,9 +332,9 @@ static void MX_TIM3_Init(void)
   TIM_MasterConfigTypeDef sMasterConfig;
 
   htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 0;
+  htim3.Init.Prescaler = 36000;
   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 0xAAAA;
+  htim3.Init.Period = 20000;
   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV2;
   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
@@ -451,16 +459,15 @@ static void MX_GPIO_Init(void)
 /* StartDefaultTask function */
 void StartDefaultTask(void const * argument)
 {
-
   /* USER CODE BEGIN 5 */
+  //xSemaphore = xSemaphoreCreateBinary();
+  osDelay(100);
+  HAL_TIM_Base_Start_IT(&htim2);
+  HAL_TIM_Base_Start_IT(&htim3);
   /* Infinite loop */
   for(;;)
   {
-
-		debugPrint(&huart1,	"oimate!"	);	// print
-	    debugPrint(&huart1,	"\r\n"	);	// manual new line
-	    debugPrintln(&huart1,	"how are you?"	);	// print full line
-	    osDelay(1000);
+	    osDelay(1);
   }
   /* USER CODE END 5 */ 
 }
@@ -470,9 +477,21 @@ void SerialMonitor(void const * argument)
 {
   /* USER CODE BEGIN SerialMonitor */
   /* Infinite loop */
+
+	 BaseType_t xHigherPriorityTaskWoken;
+	  xHigherPriorityTaskWoken = pdFALSE;
+	  xSemaphoreTake ( xBinarySemaphoreHandle,1);
+
   for(;;)
   {
-    osDelay(1);
+	    if (xSemaphoreTake ( xBinarySemaphoreHandle,0) == pdTRUE){
+	    	debugPrint(&huart1,	"oimate!"	);	// print
+	    	debugPrint(&huart1,	"\r\n"	);	// manual new line
+	    	debugPrintln(&huart1,	"how are you?"	);	// print full line
+	    	//osDelay(1000);
+	    }
+    	osDelay(1);
+	    //	xSemaphoreGiveFromISR( xBinarySemaphoreHandle, xHigherPriorityTaskWoken);
   }
   /* USER CODE END SerialMonitor */
 }
@@ -544,6 +563,15 @@ void assert_failed(uint8_t* file, uint32_t line)
 }
 
 #endif
+
+
+void SetxBinarySemaphoreHandleFromISR(BaseType_t xHiPriorTaskWok)
+{
+  xSemaphoreGiveFromISR( xBinarySemaphoreHandle, xHiPriorTaskWok);
+ //xSemaphoreGiveFromISR( xCountingSemaphore, (BaseType_t*)&xHiPriorTaskWok );
+}
+
+
 
 /**
   * @}

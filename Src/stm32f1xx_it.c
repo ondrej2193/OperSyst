@@ -37,7 +37,7 @@
 #include "cmsis_os.h"
 
 /* USER CODE BEGIN 0 */
-
+#include "externDefTiISR.h"
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -239,13 +239,16 @@ void TIM1_UP_IRQHandler(void)
 */
 void TIM2_IRQHandler(void)
 {
+  //BaseType_t xHigherPriorityTaskWoken = pdFALSE;
   /* USER CODE BEGIN TIM2_IRQn 0 */
-
+  //xSemaphoreGiveFromISR(xSemaphore, &xHigherPriorityTaskWoken);
   /* USER CODE END TIM2_IRQn 0 */
   HAL_TIM_IRQHandler(&htim2);
+  //SetxBinarySemaphoreHandleFromISR (xHigherPriorityTaskWoken);
+ //  xSemaphoreGive(xBinarySemaphore);
   /* USER CODE BEGIN TIM2_IRQn 1 */
-
   /* USER CODE END TIM2_IRQn 1 */
+  //portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
 }
 
 /**
@@ -254,11 +257,12 @@ void TIM2_IRQHandler(void)
 void TIM3_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM3_IRQn 0 */
-
+  BaseType_t xHigherPriorityTaskWoken = pdFALSE;
   /* USER CODE END TIM3_IRQn 0 */
   HAL_TIM_IRQHandler(&htim3);
+  SetxBinarySemaphoreHandleFromISR (xHigherPriorityTaskWoken);
   /* USER CODE BEGIN TIM3_IRQn 1 */
-
+  portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
   /* USER CODE END TIM3_IRQn 1 */
 }
 
