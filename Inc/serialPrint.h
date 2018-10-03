@@ -10,8 +10,6 @@
 
 #include "stm32f1xx_hal.h"
 
-	void debugPrint(UART_HandleTypeDef *huart,char _out[]);
-	void debugPrintln(UART_HandleTypeDef *huart,char _out[]);
 
 
 #endif /* SERIALPRINT_H_ */

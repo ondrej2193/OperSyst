@@ -49,7 +49,7 @@
 #ifndef __MAIN_H
 #define __MAIN_H
   /* Includes ------------------------------------------------------------------*/
-
+extern void clear(void);    /* clear screen */
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
