@@ -8,6 +8,15 @@
 
 #ifndef SERMON_H_
 #define SERMON_H_
+
+#ifndef __OS_VER__
+  #define __OS_VER__   "00.03.62"
+#endif
+#ifndef __PREG_VER__
+  #define __PREG_VER__   "00.01.0A"
+#endif
+
+
 /*!!!!!!!!!!!!!!!!!!!!!!!!!!!! EXTERN DEFINITIONS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
 extern UART_HandleTypeDef huart1;
 extern void debugPrintln(UART_HandleTypeDef *huart,char _out[]);
@@ -29,8 +38,12 @@ typedef struct {
   unsigned int  Param;
 } COM;
 
+typedef struct {
+	uint8_t Type;
+	uint8_t *Vypis;
+} PRINT_FORMAT;
 
-const unsigned char Vymaz[]={                 /* vymazanie obrazovky */
+const unsigned char ClrScr[]={                 /* vymazanie obrazovky */
   0x1B,0x5B,0x48,0x1B,0x5B,0x4A,0x00
 };
 const unsigned char Back[]={                  /* zmazanie znaku */
@@ -40,6 +53,10 @@ const unsigned char Back[]={                  /* zmazanie znaku */
 const unsigned char CrLf[]={                  /* novy riadok */
   0x0D,0x0A,0x00
 };
+
+const unsigned char OsVerZ[]={" ...OS IAR PowerPac RTOS "};
+const unsigned char VerZ[]={" ...program version: "};
+const unsigned char DateZ[]={" ...compilation date: "};
 
 const char Hlavicka[MAX_ROWS][MAX_ROW_LENGTH]={
   "ษอออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออป",
@@ -53,6 +70,22 @@ const char Hlavicka[MAX_ROWS][MAX_ROW_LENGTH]={
 const COM Commands[2]={
   "RST\0",clear,'H',                  /* 0 */
   "CLS\0",clear,0,                    /* 1 */
+};
+
+
+PRINT_FORMAT ClearPrintTab[]={
+  's',(unsigned char *)&ClrScr,
+  's',(unsigned char *)&CrLf,                // novy riadok
+  's',(unsigned char *)&OsVerZ,              // verzia OS
+  's',(unsigned char *)__OS_VER__,
+  's',(unsigned char *)&CrLf,                // novy riadok
+  's',(unsigned char *)&VerZ,                // verzia programu
+  's',(unsigned char *)__PREG_VER__,
+  's',(unsigned char *)&CrLf,                // novy riadok
+  's',(unsigned char *)&DateZ,               // datum kompilacie
+  's',(unsigned char *)__DATE__,
+  's',(unsigned char *)&CrLf,                // novy riadok
+  's',(unsigned char *)&CrLf                 // novy riadok
 };
 
 #endif /* SERMON_H_ */
