@@ -43,7 +43,7 @@ extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f1xx.h"
+#include "d:\Work\TestLiveOrganismST\STTest\OperSyst\Drivers\CMSIS\Device\ST\STM32F1xx\Include\stm32f1xx.h"
 #if defined(USE_HAL_LEGACY)
 #include "Legacy/stm32_hal_legacy.h"
 #endif

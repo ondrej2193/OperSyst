@@ -11,7 +11,7 @@
 #include "cmsis_os.h"
 
 
-extern void SetxBinarySemaphoreHandleFromISR( BaseType_t xHiPriorTaskWok);
+//extern void SetxBinarySemaphoreHandleFromISR( BaseType_t xHiPriorTaskWok);
 extern osSemaphoreId bISemGetCANDataHandle;
 extern osSemaphoreId bISemSendCANDataHandle;
 extern osSemaphoreId bISemGetSerialDataHandle;

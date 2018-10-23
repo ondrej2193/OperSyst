@@ -91,7 +91,7 @@ static void MX_USART1_UART_Init(void);
 void StartDefaultTask(void const * argument);
 void SerialMonitor(void const * argument);
 void CANKomunik(void const * argument);
-void SetxBinarySemaphoreHandleFromISR( BaseType_t xHiPriorTaskWok);
+//void SetxBinarySemaphoreHandleFromISR( BaseType_t xHiPriorTaskWok);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -563,11 +563,10 @@ void assert_failed(uint8_t* file, uint32_t line)
 #endif
 
 
-void SetxBinarySemaphoreHandleFromISR(BaseType_t xHiPriorTaskWok)
-{
-  xSemaphoreGiveFromISR( xBinarySemaphoreHandle, xHiPriorTaskWok);
- //xSemaphoreGiveFromISR( xCountingSemaphore, (BaseType_t*)&xHiPriorTaskWok );
-}
+//void SetxBinarySemaphoreHandleFromISR(BaseType_t xHiPriorTaskWok)
+//{
+//  xSemaphoreGiveFromISR( xBinarySemaphoreHandle, xHiPriorTaskWok);
+//}
 
 
 

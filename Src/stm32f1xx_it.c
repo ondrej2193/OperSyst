@@ -49,6 +49,8 @@ extern UART_HandleTypeDef huart1;
 
 extern TIM_HandleTypeDef htim1;
 
+extern osSemaphoreId xBinarySemaphoreHandle;
+
 /******************************************************************************/
 /*            Cortex-M3 Processor Interruption and Exception Handlers         */ 
 /******************************************************************************/
@@ -260,7 +262,8 @@ void TIM3_IRQHandler(void)
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
   /* USER CODE END TIM3_IRQn 0 */
   HAL_TIM_IRQHandler(&htim3);
-  SetxBinarySemaphoreHandleFromISR (xHigherPriorityTaskWoken);
+  //SetxBinarySemaphoreHandleFromISR (xHigherPriorityTaskWoken);
+  xSemaphoreGiveFromISR( xBinarySemaphoreHandle, xHigherPriorityTaskWoken);
   /* USER CODE BEGIN TIM3_IRQn 1 */
   portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
   /* USER CODE END TIM3_IRQn 1 */
